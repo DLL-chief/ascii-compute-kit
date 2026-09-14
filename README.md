@@ -11,6 +11,8 @@
 
 Демо: https://dll-chief.github.io/ascii-compute-kit/
 
+Если открывается 404 — включи Pages: [Settings → Pages](https://github.com/DLL-chief/ascii-compute-kit/settings/pages) → Deploy from a branch → `main` → `/` → Save. Как в govnosert. Агент этот тумблер нажать не может (ADR-004).
+
 Исходники в этом репозитории. React-студия (`src/ui`) — снимок превью на TanStack Start (ADR-002). Сайт Pages — ванильный `index.html` (ADR-003).
 
 ## 2. Стек
@@ -23,7 +25,7 @@
 | UI (снимок превью) | React в `src/ui` | — |
 | Backend | нет | — |
 | БД | нет | — |
-| Инфраструктура | GitHub Pages через Actions (ADR-004), статика без Vite | — |
+| Инфраструктура | GitHub Pages, ветка `main`, папка `/` | — |
 
 Чего в стеке НЕТ и почему:
 
@@ -68,7 +70,7 @@ Wasm: исходник `wasm/ascii.rs`, байты встроены в `src/asci
 │       ├── 001-github-pages-single-source-of-truth.md
 │       ├── 002-tanstack-start-preview.md
 │       ├── 003-github-pages-static.md
-│       └── 004-pages-via-actions.md
+│       └── 004-pages-toggle-owner.md
 ├── wasm/ascii.rs
 ├── public/wasm/ascii.wasm
 └── src/
