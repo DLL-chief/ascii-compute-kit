@@ -5,18 +5,33 @@ type Pending = {
   reject: (e: Error) => void;
 };
 
+/** Pages кладёт бандл воркера рядом с app.js и вызывает это до init(). */
+let workerUrlOverride: string | URL | undefined;
+
+export function setComputeWorkerUrl(url: string | URL) {
+  workerUrlOverride = url;
+}
+
 export class ComputeWorkerClient {
   private worker: Worker | null = null;
   private seq = 1;
   private pending = new Map<number, Pending>();
 
-  constructor(private useWasm: boolean) {}
+  constructor(
+    private useWasm: boolean,
+    private workerUrl?: string | URL,
+  ) {}
+
+  private script(): string | URL {
+    if (this.workerUrl) return this.workerUrl;
+    if (workerUrlOverride) return workerUrlOverride;
+    // Конкатенация, чтобы esbuild не вшивал воркер в app.js.
+    return new URL("../workers/compute.worker" + ".ts", import.meta.url);
+  }
 
   private ensure() {
     if (this.worker) return this.worker;
-    const worker = new Worker(new URL("../workers/compute.worker.ts", import.meta.url), {
-      type: "module",
-    });
+    const worker = new Worker(this.script(), { type: "module" });
     worker.onmessage = (ev: MessageEvent) => {
       const data = ev.data as
         | { id: number; ok: true; kind: "init"; usedWasm: boolean }

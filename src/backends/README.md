@@ -5,3 +5,5 @@
 Порядок авто: webgpu → webgl2 → wasm-worker → js-worker → js-main.
 
 GPU считает только сетку яркости; глифы рисует то же 2D, что и JS, чтобы шрифт совпадал.
+
+Worker-клиент: `setComputeWorkerUrl` нужен на Pages, где бандл лежит в `pages/compute.worker.js`.

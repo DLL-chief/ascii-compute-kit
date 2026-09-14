@@ -9,6 +9,8 @@
 
 Worker: `{ id, kind: init|run, useWasm }` / ответ ok + rgba transferable.
 
+На Pages URL воркера задаёт `setComputeWorkerUrl` (`pages/compute.worker.js`). Без вызова клиент берёт `src/workers/compute.worker.ts`.
+
 Ядро: Y = 0.299R+0.587G+0.114B, индекс `floor(Y/255 * (ramp.length-1))`.
 `toAsciiText` — тот же индекс, строка для `<pre>`.
 

@@ -6,12 +6,12 @@
 ## 1. Что это за проект
 
 * Бизнес-цель: браузерный каркас «картинка → ASCII-art», который показывает три вычислительных контура веба (главный поток / Web Worker / WebAssembly / GPU-шейдеры) и деградирует, если контур недоступен. Первый пользователь — DLL-chief на Android Chrome и десктопе; вторичные — форки как стартовый шаблон фильтров.
-* Стадия: прототип с рабочим кодом (ядро, воркер, Wasm, WebGL2, WebGPU, UI).
+* Стадия: прототип с рабочим кодом и живым GitHub Pages.
 * Владелец: DLL-chief (https://github.com/DLL-chief).
 
-Публикация: исходники в этом репозитории. Живое превью собрано на TanStack Start (ADR-002). GitHub Pages из голого `index.html` — следующий шаг, не блокирует код.
+Демо: https://dll-chief.github.io/ascii-compute-kit/
 
-Планируемый URL Pages: https://dll-chief.github.io/ascii-compute-kit/
+Исходники в этом репозитории. React-студия (`src/ui`) — снимок превью на TanStack Start (ADR-002). Сайт Pages — ванильный `index.html` (ADR-003).
 
 ## 2. Стек
 
@@ -19,28 +19,34 @@
 | --- | --- | --- |
 | Compute CPU | JS + Web Workers + WebAssembly (`luma_indices`, Rust → wasm32) | Wasm MVP |
 | Compute GPU | WebGPU compute (WGSL), запасной WebGL2 fragment | adapter / webgl2 |
-| UI (превью) | React 19 + TanStack Start (ADR-002) | — |
-| UI (этот репозиторий) | модули `src/*` без обязательного бандлера | ES2022 |
+| UI (Pages) | `index.html` + `pages/app.js` (ESM, без React) | ES2022 |
+| UI (снимок превью) | React в `src/ui` | — |
 | Backend | нет | — |
 | БД | нет | — |
-| Инфраструктура | GitHub, ветка `main` | — |
+| Инфраструктура | GitHub Pages, ветка `main`, папка `/` | — |
 
 Чего в стеке НЕТ и почему:
 
 * Нет сервера, API, БД, авторизации.
 * Нет SharedArrayBuffer: GitHub Pages не отдаёт COOP/COEP.
 * Нет GitLab. Источник истины — этот репозиторий (ADR-001).
-* Фреймворк в превью — из-за платформы (ADR-002). Ядро ASCII от React не зависит.
+* Нет Vite на Pages. Бандлы `pages/*.js` коммитятся (ADR-003).
 
 ## 3. Быстрый старт
+
+Открыть https://dll-chief.github.io/ascii-compute-kit/ или:
 
 ```bash
 git clone https://github.com/DLL-chief/ascii-compute-kit.git
 cd ascii-compute-kit
+# любой static server из корня, например:
+python3 -m http.server 8080
 ```
 
 Модули: `src/ascii`, `src/detect`, `src/pipeline`, `src/backends`, `src/workers`.
-Wasm: исходник `wasm/ascii.rs`, байты встроены в `src/ascii/wasm-bytes.ts` (можно не таскать `.wasm` отдельно).
+Wasm: исходник `wasm/ascii.rs`, байты встроены в `src/ascii/wasm-bytes.ts`.
+
+Пересборка Pages после правки ядра: `bash scripts/build-pages.sh`.
 
 Переменные окружения не нужны.
 
@@ -52,13 +58,16 @@ Wasm: исходник `wasm/ascii.rs`, байты встроены в `src/asci
 ├── AGENTS.md
 ├── CLAUDE.md
 ├── STATUS.md
+├── index.html          — вход GitHub Pages
+├── pages/              — ванильный UI + бандлы
 ├── docs/
 │   ├── README.md
 │   ├── architecture.md
 │   ├── api_contracts.md
 │   └── adr/
 │       ├── 001-github-pages-single-source-of-truth.md
-│       └── 002-tanstack-start-preview.md
+│       ├── 002-tanstack-start-preview.md
+│       └── 003-github-pages-static.md
 ├── wasm/ascii.rs
 ├── public/wasm/ascii.wasm
 └── src/
@@ -67,7 +76,7 @@ Wasm: исходник `wasm/ascii.rs`, байты встроены в `src/asci
     ├── detect/         — feature detect
     ├── pipeline/       — авто-деградация
     ├── workers/        — compute.worker.ts
-    └── ui/             — AsciiStudio (React, как в превью)
+    └── ui/             — AsciiStudio (React, снимок превью)
 ```
 
 ## 5. Кому и как читать
@@ -82,3 +91,4 @@ Wasm: исходник `wasm/ascii.rs`, байты встроены в `src/asci
 2. PR по-русски: что и зачем.
 3. Обновить `STATUS.md`, если меняется активное состояние.
 4. Не ломать `Backend.run` без нового ADR.
+5. Если трогали ядро/воркер/детект — `bash scripts/build-pages.sh` и закоммитить `pages/*.js`.
