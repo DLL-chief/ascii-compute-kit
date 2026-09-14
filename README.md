@@ -1,84 +1,83 @@
 # ascii-compute-kit
 
 Это ЭТАЛОННЫЙ ШАБЛОН репозитория (vibecoders/project-template), применённый к конкретному проекту.
-Структуру можно копировать в новый проект. Пустые незаполненные файлы хуже, чем их отсутствие: они создают видимость, что документация есть, хотя её на самом деле нет.
+Структуру можно копировать в новый проект. Пустые незаполненные файлы хуже, чем их отсутствие.
 
 ## 1. Что это за проект
 
-* Бизнес-цель: дать автору и будущим форкам готовый браузерный каркас «картинка → ASCII-art», который наглядно показывает три вычислительных контура веба (главный поток / Web Worker / WebAssembly / GPU-шейдеры) и умеет деградировать, если какой-то контур недоступен. Первый пользователь — сам автор (DLL-chief) на Android Chrome и десктопе; вторичные — люди, которые клонируют репозиторий как стартовый шаблон для своих фильтров.
-* Стадия: прототип. Кода приложения ещё нет; зафиксированы цель, стек, контракты и решения.
-* Владелец: DLL-chief (https://github.com/DLL-chief). Продуктовые решения принимает владелец репозитория.
+* Бизнес-цель: браузерный каркас «картинка → ASCII-art», который показывает три вычислительных контура веба (главный поток / Web Worker / WebAssembly / GPU-шейдеры) и деградирует, если контур недоступен. Первый пользователь — DLL-chief на Android Chrome и десктопе; вторичные — форки как стартовый шаблон фильтров.
+* Стадия: прототип с рабочим кодом (ядро, воркер, Wasm, WebGL2, WebGPU, UI).
+* Владелец: DLL-chief (https://github.com/DLL-chief).
 
-Публикация демо: GitHub Pages с этого же репозитория.
-Планируемый URL после включения Pages: https://dll-chief.github.io/ascii-compute-kit/
+Публикация: исходники в этом репозитории. Живое превью собрано на TanStack Start (ADR-002). GitHub Pages из голого `index.html` — следующий шаг, не блокирует код.
+
+Планируемый URL Pages: https://dll-chief.github.io/ascii-compute-kit/
 
 ## 2. Стек
 
 | Слой | Технология | Версия |
 | --- | --- | --- |
-| Frontend | HTML + CSS + JS-модули без фреймворка | ES2022, браузеры с Wasm (Chrome/Firefox/Safari последних лет) |
-| Compute CPU | Web Workers + WebAssembly (модуль без wasm-bindgen в первой итерации) | Wasm MVP; SIMD и потоки — опционально |
-| Compute GPU | WebGPU compute (WGSL), запасной путь WebGL2 fragment | WebGPU там, где есть adapter; иначе WebGL2 |
+| Compute CPU | JS + Web Workers + WebAssembly (`luma_indices`, Rust → wasm32) | Wasm MVP |
+| Compute GPU | WebGPU compute (WGSL), запасной WebGL2 fragment | adapter / webgl2 |
+| UI (превью) | React 19 + TanStack Start (ADR-002) | — |
+| UI (этот репозиторий) | модули `src/*` без обязательного бандлера | ES2022 |
 | Backend | нет | — |
 | БД | нет | — |
-| Инфраструктура | GitHub + GitHub Pages + GitHub Actions (позже, для Pages) | ветка `main` |
+| Инфраструктура | GitHub, ветка `main` | — |
 
 Чего в стеке НЕТ и почему:
 
-* Нет сервера и API. Демо должно открываться как статика на Pages.
-* Нет React/Vue/Vite в первой итерации. Сборка усложняет шаблон и мешает понять, какой файл за что отвечает.
-* Нет SharedArrayBuffer / wasm-pthread. GitHub Pages не отдаёт COOP/COEP-заголовки; SAB не обязателен для ASCII.
-* Нет бэкенда, БД, авторизации, аналитики.
-* Нет GitLab. Источник истины — этот GitHub-репозиторий (см. `docs/adr/001-github-pages-single-source-of-truth.md`).
-* Нет Node-зависимостей до тех пор, пока не понадобится собирать `.wasm`. Первый `.wasm` можно положить готовым файлом.
+* Нет сервера, API, БД, авторизации.
+* Нет SharedArrayBuffer: GitHub Pages не отдаёт COOP/COEP.
+* Нет GitLab. Источник истины — этот репозиторий (ADR-001).
+* Фреймворк в превью — из-за платформы (ADR-002). Ядро ASCII от React не зависит.
 
-## 3. Быстрый старт (локально)
-
-Кода ещё нет. Когда появится `index.html` в корне (или в оговорённой папке публикации):
+## 3. Быстрый старт
 
 ```bash
 git clone https://github.com/DLL-chief/ascii-compute-kit.git
 cd ascii-compute-kit
-python3 -m http.server 8080
-# открыть http://localhost:8080/
 ```
 
-Переменные окружения не нужны. Файл `.env.example` не заводим, пока не появится первая переменная.
+Модули: `src/ascii`, `src/detect`, `src/pipeline`, `src/backends`, `src/workers`.
+Wasm: исходник `wasm/ascii.rs`, байты встроены в `src/ascii/wasm-bytes.ts` (можно не таскать `.wasm` отдельно).
 
-GitHub Pages: Settings → Pages → Deploy from a branch → `main` / `/` (или `/docs`, если так решим отдельным ADR). Для обхода Jekyll в корне должен лежать `.nojekyll` — его добавим вместе с кодом.
+Переменные окружения не нужны.
 
 ## 4. Карта структуры репозитория
 
 ```
 .
-├── README.md            — вы здесь: точка входа для людей
-├── AGENTS.md             — правила для ЛЮБОГО ИИ-агента (Claude, Grok, …)
-├── CLAUDE.md             — параметры окружения для Claude Code, ссылается на AGENTS.md
-├── STATUS.md             — текущее состояние работы: спринт, блокеры, беклог
+├── README.md
+├── AGENTS.md
+├── CLAUDE.md
+├── STATUS.md
 ├── docs/
-│   ├── README.md         — как устроена папка docs/
-│   ├── architecture.md   — карта компонентов, точки интеграции, потоки данных
-│   ├── api_contracts.md  — контракты пайплайна и бэкендов (не HTTP)
-│   └── adr/               — architecture decision records (нумерованные, назад не редактируются)
-│       ├── README.md
-│       └── 001-github-pages-single-source-of-truth.md
+│   ├── README.md
+│   ├── architecture.md
+│   ├── api_contracts.md
+│   └── adr/
+│       ├── 001-github-pages-single-source-of-truth.md
+│       └── 002-tanstack-start-preview.md
+├── wasm/ascii.rs
 └── src/
-    ├── README.md         — конвенция модульных README
-    ├── detect/README.md
-    ├── pipeline/README.md
-    ├── backends/README.md
-    └── ascii/README.md
+    ├── ascii/          — ядро, рампа, wasm, файл
+    ├── backends/       — js-main, worker, wasm, webgpu, webgl2
+    ├── detect/         — feature detect
+    ├── pipeline/       — авто-деградация
+    ├── workers/        — compute.worker.ts
+    └── ui/             — AsciiStudio (React, как в превью)
 ```
 
-## 5. Кому и как читать этот репозиторий
+## 5. Кому и как читать
 
-* Человек начинает с этого файла, дальше — `docs/architecture.md`.
-* ИИ-агент сначала читает `AGENTS.md`/`CLAUDE.md`, потом `STATUS.md` — чтобы понимать, что уже сделано и что делать дальше, а не предлагать заново то, что уже решено.
-* Локальные `README.md` внутри модулей (`src/<module>/README.md`) читаются ТОЧЕЧНО, когда агент работает именно в этом модуле — не при каждом запуске.
+* Человек: этот файл → `docs/architecture.md`.
+* ИИ-агент: `AGENTS.md` → `STATUS.md` → контракты.
+* Модульные README — точечно.
 
 ## 6. Как вносить изменения
 
 1. Ветка от `main` (`feature/...`, `fix/...`).
-2. PR с описанием «что и зачем» (по-русски).
-3. Обязательно: обновить `STATUS.md`, если задача меняет активное состояние работы (см. `AGENTS.md`, п.1).
-4. Для документации достаточно ревью владельца. Когда появится код и CI — зелёный CI → мёрдж.
+2. PR по-русски: что и зачем.
+3. Обновить `STATUS.md`, если меняется активное состояние.
+4. Не ломать `Backend.run` без нового ADR.
