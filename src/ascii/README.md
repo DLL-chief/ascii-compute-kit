@@ -1,5 +1,11 @@
-# src/ascii
+# ascii
 
-Ответственность: чистая функция фильтра. Язык реализации может быть JS, C/Rust→Wasm или WGSL, семантика одна (раздел 4 в `docs/api_contracts.md`).
+Ядро: яркость ячейки → индекс рампы → глифы или текст.
 
-Не делает: не выбирает backend, не знает про Pages и Workers.
+* `kernel.ts` — `computeIndices`, `rasterizeGlyphs`, `toAsciiText`, `asciiFilter`
+* `constants.ts` — рампа, 512, лимиты файла
+* `sample.ts` — тестовая пластина без DOM
+* `from-file.ts` — валидация и ужим картинки
+* `wasm.ts` / `wasm-bytes.ts` — `luma_indices`
+
+Читать вместе с `docs/api_contracts.md`.

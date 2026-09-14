@@ -60,6 +60,7 @@ Wasm: исходник `wasm/ascii.rs`, байты встроены в `src/asci
 │       ├── 001-github-pages-single-source-of-truth.md
 │       └── 002-tanstack-start-preview.md
 ├── wasm/ascii.rs
+├── public/wasm/ascii.wasm
 └── src/
     ├── ascii/          — ядро, рампа, wasm, файл
     ├── backends/       — js-main, worker, wasm, webgpu, webgl2

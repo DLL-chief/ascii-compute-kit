@@ -1,8 +1,5 @@
-# src/detect
+# detect
 
-Ответственность: один раз (или по кнопке «перепроверить») ответить, что умеет текущий браузер.
+`detect(onPartial?)` возвращает Workers, Wasm, WebGPU, WebGL2, isolated.
 
-Вход: нет.
-Выход: `DetectResult` из `docs/api_contracts.md`.
-
-Не делает: не запускает фильтр, не создаёт GPU pipeline, не грузит wasm (кроме дешёвой проверки `typeof WebAssembly`).
+WebGPU: `requestAdapter` с таймаутом 1.5 с, иначе UI не зависает. Пока ждём — статус «проверяю», не «нет».
