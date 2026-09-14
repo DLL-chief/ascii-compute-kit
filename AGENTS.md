@@ -20,7 +20,8 @@
 * Воркеры — same-origin. Wasm: `fetch` или встроенные байты `src/ascii/wasm-bytes.ts`.
 * Не требовать SharedArrayBuffer.
 * UI на русском.
-* Ядро в `src/ascii` не зависит от React. React-снимок — `src/ui`. GitHub Pages — `index.html` + `pages/` (ADR-003).
+* Ядро в `src/ascii` не зависит от React. React-снимок — `src/ui`. GitHub Pages — `index.html` + `pages/` (ADR-003), публикация workflow (ADR-004).
+
 * После правки ядра/воркера/пайплайна: `bash scripts/build-pages.sh` и закоммитить `pages/app.js`, `pages/compute.worker.js`.
 
 ## 4. Язык и стиль
